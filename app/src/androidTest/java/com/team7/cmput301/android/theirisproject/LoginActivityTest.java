@@ -8,11 +8,10 @@ import com.robotium.solo.Solo;
 import com.team7.cmput301.android.theirisproject.activity.LoginActivity;
 import com.team7.cmput301.android.theirisproject.activity.PatientListActivity;
 import com.team7.cmput301.android.theirisproject.activity.ProblemListActivity;
-import com.team7.cmput301.android.theirisproject.helper.DeleteUserTask;
+import com.team7.cmput301.android.theirisproject.helper.DeleteTask;
 import com.team7.cmput301.android.theirisproject.helper.Timer;
 import com.team7.cmput301.android.theirisproject.model.CareProvider;
 import com.team7.cmput301.android.theirisproject.model.Patient;
-import com.team7.cmput301.android.theirisproject.model.User;
 import com.team7.cmput301.android.theirisproject.task.Callback;
 import com.team7.cmput301.android.theirisproject.task.RegisterTask;
 
@@ -141,12 +140,12 @@ public class LoginActivityTest extends ActivityInstrumentationTestCase2<LoginAct
     }
 
     private void deleteUserWithEmail(String email) {
-        new DeleteUserTask(new Callback<Boolean>() {
+        new DeleteTask(new Callback<Boolean>() {
             @Override
             public void onComplete(Boolean res) {
                 // Don't need to do anything with result
             }
-        }).execute(email);
+        }).execute("user", "email", email);
 
         Timer.sleep(1000);
     }

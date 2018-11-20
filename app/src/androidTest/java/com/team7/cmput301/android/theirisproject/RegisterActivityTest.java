@@ -5,9 +5,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.robotium.solo.Solo;
-import com.team7.cmput301.android.theirisproject.R;
 import com.team7.cmput301.android.theirisproject.activity.RegisterActivity;
-import com.team7.cmput301.android.theirisproject.helper.DeleteUserTask;
+import com.team7.cmput301.android.theirisproject.helper.DeleteTask;
 import com.team7.cmput301.android.theirisproject.helper.Timer;
 import com.team7.cmput301.android.theirisproject.model.Patient;
 import com.team7.cmput301.android.theirisproject.model.User;
@@ -123,14 +122,14 @@ public class RegisterActivityTest extends ActivityInstrumentationTestCase2<Regis
         solo.enterText(emailEditText, testEmail);
         solo.enterText(phoneEditText, "123-456-7890");
 
-        new DeleteUserTask(new Callback<Boolean>() {
+        new DeleteTask(new Callback<Boolean>() {
             @Override
             public void onComplete(Boolean deleteSuccess) {
                 if (!deleteSuccess) {
                     assert false;
                 }
             }
-        }).execute(testEmail);
+        }).execute("user", "email", testEmail);
 
         // Must pause to properly give time to delete the user if it exists
         // Need to determine if this is always going to be sufficient time

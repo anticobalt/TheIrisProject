@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.robotium.solo.Solo;
-import com.team7.cmput301.android.theirisproject.activity.DeleteProblemActivity;
 import com.team7.cmput301.android.theirisproject.activity.RecordListActivity;
 import com.team7.cmput301.android.theirisproject.activity.ViewRecordActivity;
+import com.team7.cmput301.android.theirisproject.helper.DeleteTask;
 import com.team7.cmput301.android.theirisproject.helper.Timer;
 import com.team7.cmput301.android.theirisproject.model.Record;
 import com.team7.cmput301.android.theirisproject.task.AddRecordTask;
@@ -65,6 +65,7 @@ public class RecordListActivityTest extends ActivityInstrumentationTestCase2<Rec
     public void testCorrectActivity() {
         String activityName = RecordListActivity.class.getSimpleName();
         solo.assertCurrentActivity("Wrong activity!", activityName);
+        new DeleteTask(System.out::print).execute("record", "title", title);  // cleanup
     }
 
     public void testViewRecordList() {
@@ -83,6 +84,8 @@ public class RecordListActivityTest extends ActivityInstrumentationTestCase2<Rec
 
         // confirm the activity closes and next one opens
         solo.waitForActivity(ViewRecordActivity.class);
+
+        new DeleteTask(System.out::print).execute("record", "title", title);  // cleanup
 
     }
 

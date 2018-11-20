@@ -7,45 +7,50 @@ import com.google.gson.JsonArray;
 import com.searchly.jestdroid.JestDroidClient;
 import com.team7.cmput301.android.theirisproject.IrisProjectApplication;
 import com.team7.cmput301.android.theirisproject.model.Patient;
+import com.team7.cmput301.android.theirisproject.model.Record;
 import com.team7.cmput301.android.theirisproject.task.Callback;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Delete;
-import io.searchbox.core.DeleteByQuery;
-import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
 /**
- * DeleteUserTask is used for testing purposes to delete a User from the DB, given their e-mail
+ * DeleteTask is used for testing purposes to delete an entry from the DB, given their identifier
  * Note that this is not involved in any use cases for the application!
  *
  * @author Jmmxp
  */
-public class DeleteUserTask extends AsyncTask<String, Void, Boolean> {
+public class DeleteTask extends AsyncTask<String, Void, Boolean> {
 
-    private static final String TAG = DeleteUserTask.class.getSimpleName();
+    private static final String TAG = DeleteTask.class.getSimpleName();
     private Callback<Boolean> callback;
 
-    public DeleteUserTask(Callback<Boolean> callback) {
+    public DeleteTask(Callback<Boolean> callback) {
         this.callback = callback;
     }
 
     /**
-     * Deletes the User registered with the given email
+     * Deletes the entry with the given identifier for a field
      */
     @Override
     protected Boolean doInBackground(String... strings) {
-        String email = strings[0];
-        if (email == null) {
+
+        String type = strings[0];  // e.g. "user"
+        String field = strings[1];  // e.g. "email"
+        String identifier = strings[2];  // e.g. "gg@gmail.com"
+
+        if (identifier == null) {
             return false;
         }
 
-        Search search = new Search.Builder("{\"query\": {\"term\": {\"email\": \"" + email + "\"}}}")
+        String query = String.format("{\"query\": {\"term\": {\"%s\": \"%s\"}}}", field, identifier);
+        Search search = new Search.Builder(query)
                 .addIndex(IrisProjectApplication.INDEX)
-                .addType("user")
+                .addType(type)
                 .build();
 
         JestDroidClient client = IrisProjectApplication.getDB();
@@ -64,11 +69,16 @@ public class DeleteUserTask extends AsyncTask<String, Void, Boolean> {
                 return false;
             }
 
-            String id = searchResult.getSourceAsObject(Patient.class, true).getId();
+            String id;
+            switch(type) {
+                case "user": id = searchResult.getSourceAsObject(Patient.class, true).getId(); break;
+                case "record" : id = searchResult.getSourceAsObject(Record.class, true).getId(); break;
+                default: return false;
+            }
 //            id = arrayHits.getAsJsonObject().get("_index").getAsString();
 
             Delete delete = new Delete.Builder(id)
-                    .index(IrisProjectApplication.INDEX).type("user").build();
+                    .index(IrisProjectApplication.INDEX).type(type).build();
 
             JestResult deleteResult = client.execute(delete);
 
